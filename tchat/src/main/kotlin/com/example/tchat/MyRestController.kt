@@ -1,12 +1,22 @@
 package com.example.tchat.restcontroller
 
 import com.example.tchat.model.StudentBean
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/api")
 class MyRestController {
+
+    //http://localhost:8080/receiveStudent
+    //Json Attendu : {"name": "toto","note": 12}
+    @PostMapping("/receiveStudent")
+    fun receiveStudent(@RequestBody student: StudentBean) {
+        println("/receiveStudent : $student")
+
+        //traitement, mettre en base…
+        //Retourner d'autres données
+    }
+
 
     //http://localhost:8080/test
     @GetMapping("/test")
@@ -75,8 +85,8 @@ class MyRestController {
     @GetMapping("/Boulangerie")
     fun boulangerie(@RequestParam(value = "nbCroissant", defaultValue = "0") nbCroissant: Int,
                     @RequestParam(value = "prixCroissant", defaultValue = "0.95") prixCroissant: Double,
-                    @RequestParam(value = "prixSandwich", defaultValue = "0.95") prixSandwich: Double,
+                    @RequestParam(value = "prixSandwich", defaultValue = "8.00") prixSandwich: Double,
                     @RequestParam(value = "nbSandwich", defaultValue = "0") nbSandwich: Int): String {
-        return "Boulangerie : Croissant = $nbCroissant Sandwich = $nbSandwich pour un total de ${nbCroissant * prixCroissant + nbSandwich * prixSandwich} euros"
+        return "Boulangerie : Croissant = $nbCroissant Sandwich = $nbSandwich pour un total de ${String.format("%.2f",nbCroissant * prixCroissant + nbSandwich * prixSandwich)} euros"
     }
 }
