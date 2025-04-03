@@ -7,17 +7,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api")
 class MyRestController {
 
-    //http://localhost:8080/receiveStudent
-    //Json Attendu : {"name": "toto","note": 12}
-    @PostMapping("/receiveStudent")
-    fun receiveStudent(@RequestBody student: StudentBean) {
-        println("/receiveStudent : $student")
-
-        //traitement, mettre en base…
-        //Retourner d'autres données
-    }
-
-
     //http://localhost:8080/test
     @GetMapping("/test")
     fun testMethode(): String {
@@ -55,6 +44,27 @@ class MyRestController {
 
         return StudentBean(p1, note)
     }
+
+    //http://localhost:8080/receiveStudent
+    @PostMapping("/receiveStudent")
+    fun receiveStudent(@RequestBody student: StudentBean): StudentBean {
+        println("/receiveStudent : $student")
+
+        //traitement, mettre en base…
+        //Retourner d'autres données
+        return student
+    }
+
+    //http://localhost:8080/increment
+    @PostMapping("/increment")
+    fun increment(@RequestBody student: StudentBean): StudentBean {
+        println("/increment : $student")
+
+        //traitement, mettre en base…
+        //Retourner d'autres données
+        return StudentBean(student.name, student.note + 1)
+    }
+
 
     //On met à null s'il n'y a pas la valeur
     //http://localhost:8080/max?p1=5&p2=6
