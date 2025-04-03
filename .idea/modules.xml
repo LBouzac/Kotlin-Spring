@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CDAN-25.iml" filepath="$PROJECT_DIR$/CDAN-25.iml" />
-      <module fileurl="file://$PROJECT_DIR$/tchat/tchat.iml" filepath="$PROJECT_DIR$/tchat/tchat.iml" />
     </modules>
   </component>
 </project>
