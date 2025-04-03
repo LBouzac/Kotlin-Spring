@@ -1,4 +1,4 @@
-package com.example.tchat
+package com.example.tchat.TP
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -86,7 +86,7 @@ class TchatRestController {
     //http://localhost:8080/tchat/filter?name=John
     @GetMapping("/filter")
     fun filter(@RequestParam name: String): List<MessageBean> {
-        return messages.filter { it.pseudo == name }
+        return messages.filter { it.pseudo == name }.takeLast(10)
     }
 
 }

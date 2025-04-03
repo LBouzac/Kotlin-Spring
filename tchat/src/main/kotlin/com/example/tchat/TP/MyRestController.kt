@@ -1,6 +1,5 @@
-package com.example.tchat.restcontroller
+package com.example.tchat.TP
 
-import com.example.tchat.model.StudentBean
 import org.springframework.web.bind.annotation.*
 
 @RestController

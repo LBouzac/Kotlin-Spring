@@ -1,4 +1,4 @@
-package com.example.tchat
+package com.example.tchat.TP
 
 class MessageBean {
 
