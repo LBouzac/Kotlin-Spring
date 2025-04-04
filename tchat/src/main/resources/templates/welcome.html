@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Boot Thymeleaf Example</title>
+    <link th:href="@{/main.css}" rel="stylesheet"/>
+</head>
+<body>
+<h1>Bonjour Toto</h1>
+
+<p th:text="${message}"> </p>
+
+<ul>
+    <li class="student-item" th:each="etudiant : ${students}" th:if="${students != null}">
+        <strong th:text="${etudiant.name}"></strong>:
+        <span th:text="${etudiant.note}"></span>
+    </li>
+</ul>
+<p th:if="${students == null || students.isEmpty()}">Aucun étudiant dans la liste</p>
+
+</body>
+</html>
