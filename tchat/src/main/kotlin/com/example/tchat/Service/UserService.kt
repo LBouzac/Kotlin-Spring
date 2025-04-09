@@ -1,4 +1,6 @@
-package com.example.tchat.TPCRUD
+package com.example.tchat.Service
+
+import com.example.tchat.Bean.UserBean
 
 //Classe qui va simuler une gestion de base de données
 fun main(){

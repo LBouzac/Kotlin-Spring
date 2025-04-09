@@ -1,4 +1,4 @@
-package com.example.tchat.TP
+package com.example.tchat.Bean
 
 data class StudentBean(
     val name: String,

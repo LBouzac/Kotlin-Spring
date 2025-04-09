@@ -1,11 +1,12 @@
 package com.example.tchat
 
-import com.example.tchat.TP.MessageBean
-import com.example.tchat.TP.StudentBean
-import com.example.tchat.TPCRUD.UserBean
-import com.example.tchat.TPCRUD.UserService
-import com.example.tchat.TPbdd.TeacherBean
-import com.example.tchat.TPbdd.TeacherService
+import com.example.tchat.Bean.MessageBean
+import com.example.tchat.Bean.StudentBean
+import com.example.tchat.Bean.UserBean
+import com.example.tchat.Service.UserService
+import com.example.tchat.Bean.TeacherBean
+import com.example.tchat.Config.CHANNEL_NAME
+import com.example.tchat.Service.TeacherService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -13,9 +14,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.context.event.EventListener
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.messaging.handler.annotation.SendTo
+import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.socket.messaging.SessionSubscribeEvent
 
 @RestController
 @RequestMapping("/api")
@@ -115,87 +123,79 @@ class MyRestController {
     }
 }
 
+//@Tag, @Operation,  @ApiResponses :  pour la documentation avec Swagger
+
 @RestController
-@Tag(name = "Gestion d'un tchat", description = "Fait pour ecrire un message, et le lire")
 @RequestMapping("/tchat")
+@Tag(name = "Tchat", description = "API pour gérer les messages d'un tchat")
 class TchatRestController {
 
-    // Liste pour stocker les messages
-    private val messages = ArrayList<MessageBean>()
+    private val list: MutableList<MessageBean> = ArrayList()
+
+    //Jeu de données
+    //init {
+    //repeat(5) {
+    //    list.add(MessageBean("Toto", "Coucou"))
+    //    list.add(MessageBean("Tata", "hello"))
+    //    list.add(MessageBean("Toto", "hello"))
+    //    list.add(MessageBean("Tata", "Coucou"))
+    //}
+    //}
 
     @Operation(
-        summary = "Créer un message",
-        description = "Crée un message et l'ajoute à la liste des messages",
+        summary = "Enregistrer un message",
+        description = "Permet d'enregistrer un nouveau message envoyé par un utilisateur"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Message créé avec succès",
-            content = arrayOf(
-                Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = MessageBean::class)
-                )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Message enregistré avec succès"
             )
-        ),
-        ApiResponse(responseCode = "400", description = "Requête invalide"),
-        ApiResponse(responseCode = "500", description = "Erreur serveur")
-    ])
-    //http://localhost:8080/tchat/saveMessage
+        ]
+    )
     @PostMapping("/saveMessage")
     fun saveMessage(@RequestBody message: MessageBean) {
-        messages.add(message)
-        println("/saveMessage : $message")
+        println("/saveMessage : ${message.message} : ${message.pseudo}")
+        list.add(message)
     }
 
     @Operation(
-        summary = "Récupérer tous les messages",
-        description = "Retourne les 10 derniers messages enregistrés"
+        summary = "Obtenir les derniers messages",
+        description = "Récupère les 10 derniers messages enregistrés dans le tchat"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Liste des messages récupérée avec succès",
-            content = arrayOf(
-                Content(
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Liste des messages retournée avec succès",
+                content = [Content(
                     mediaType = "application/json",
-                    schema = Schema(implementation = ArrayList::class)
-                )
+                    schema = Schema(implementation = MessageBean::class)
+                )]
             )
-        ),
-        ApiResponse(responseCode = "500", description = "Erreur serveur")
-    ])
-
-    //http://localhost:8080/tchat/allMessages
+        ]
+    )
     @GetMapping("/allMessages")
     fun allMessages(): List<MessageBean> {
-        return messages.takeLast(10)
+        println("/allMessages")
+
+        // Pour ne retourner que les 10 derniers
+        return list.takeLast(10)
     }
 
-    @Operation(
-        summary = "Filtrer les messages",
-        description = "Filtre les messages par nom"
-    )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Liste des messages filtrée avec succès",
-            content = arrayOf(
-                Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = ArrayList::class)
-                )
-            )
-        ),
-        ApiResponse(responseCode = "400", description = "Paramètres de filtre invalides"),
-        ApiResponse(responseCode = "500", description = "Erreur serveur")
-    ])
-    //http://localhost:8080/tchat/filter?name=John
+    // http://localhost:8080/tchat/filter?filter=coucou&pseudo=toto
     @GetMapping("/filter")
-    fun filter(@RequestParam name: String): List<MessageBean> {
-        return messages.filter { it.pseudo == name }.takeLast(10)
-    }
+    fun filter(filter: String? = null, pseudo: String? = null): List<MessageBean> {
+        println("/filter filter=$filter pseudo=$pseudo")
 
+        return list.filter {
+            //Soit on n'a pas de filtre soit on garde ceux qui correspondent aux filtres
+            (filter == null || it.message.contains(filter, true))
+                    &&
+                    (pseudo == null || it.pseudo.equals(pseudo, true))
+        }
+    }
 }
 
 @RestController
@@ -269,5 +269,33 @@ class bddRestController(val teacherService : TeacherService) {
         teacherService.createTeacher(name, code)
 
         return  teacherService.getAll()
+    }
+}
+
+@Controller
+@RequestMapping("/ws") // Chemin de base pour toutes les méthodes de ce contrôleur
+class WebSocketController(private val messagingTemplate: SimpMessagingTemplate) {
+
+    private val messageHistory = ArrayList<MessageBean>()
+
+    @MessageMapping("/chat")
+    fun receiveMessage(message: MessageBean) {
+        println("/ws/chat $message")
+        messageHistory.add(message)
+
+        // Envoyer la liste des messages sur le channel
+        //Si la variable est dans le même package il faut enlever WebSocketConfig.
+        messagingTemplate.convertAndSend(CHANNEL_NAME, messageHistory)
+    }
+
+
+    @EventListener
+    fun handleWebSocketSubscribeListener(event: SessionSubscribeEvent) {
+        val headerAccessor = StompHeaderAccessor.wrap(event.message)
+
+        if (CHANNEL_NAME == headerAccessor.destination) {
+            println("Nouvel abonnement - envoi de l'historique: ${messageHistory.size} messages")
+            messagingTemplate.convertAndSend(CHANNEL_NAME, messageHistory)
+        }
     }
 }

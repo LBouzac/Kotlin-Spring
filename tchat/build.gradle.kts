@@ -34,6 +34,10 @@ dependencies {
 
 //JPA Framework Java qui génère du SQL
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+//WebSocket
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+
 }
 
 kotlin {

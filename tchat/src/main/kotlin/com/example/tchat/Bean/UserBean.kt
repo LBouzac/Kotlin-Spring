@@ -1,4 +1,4 @@
-package com.example.tchat.TPCRUD
+package com.example.tchat.Bean
 
 import jakarta.validation.constraints.Size
 

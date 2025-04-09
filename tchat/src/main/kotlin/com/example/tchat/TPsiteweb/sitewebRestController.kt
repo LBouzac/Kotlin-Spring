@@ -1,7 +1,7 @@
 package com.example.tchat.TPsiteweb
 
-import com.example.tchat.TP.StudentBean
-import com.example.tchat.TPCRUD.UserBean
+import com.example.tchat.Bean.StudentBean
+import com.example.tchat.Bean.UserBean
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -88,7 +88,7 @@ class sitewebRestController {
         }
 
         @GetMapping("/userRegister") //Affiche la page résultat
-        fun userRegister(userBean:UserBean): String {
+        fun userRegister(userBean: UserBean): String {
             println("/userRegister userBean=$userBean")
 
             return "login" //Lance login.html

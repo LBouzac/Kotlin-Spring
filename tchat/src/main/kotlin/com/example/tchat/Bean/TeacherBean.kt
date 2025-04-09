@@ -1,4 +1,4 @@
-package com.example.tchat.TPbdd
+package com.example.tchat.Bean
 
 import jakarta.persistence.*
 
