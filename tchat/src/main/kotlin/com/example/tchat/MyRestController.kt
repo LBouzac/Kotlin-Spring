@@ -133,14 +133,14 @@ class TchatRestController {
     private val list: MutableList<MessageBean> = ArrayList()
 
     //Jeu de données
-    //init {
-    //repeat(5) {
-    //    list.add(MessageBean("Toto", "Coucou"))
-    //    list.add(MessageBean("Tata", "hello"))
-    //    list.add(MessageBean("Toto", "hello"))
-    //    list.add(MessageBean("Tata", "Coucou"))
-    //}
-    //}
+    init {
+    repeat(5) {
+        list.add(MessageBean("Toto", "Coucou"))
+        list.add(MessageBean("Tata", "hello"))
+        list.add(MessageBean("Toto", "hello"))
+        list.add(MessageBean("Tata", "Coucou"))
+    }
+    }
 
     @Operation(
         summary = "Enregistrer un message",
@@ -297,5 +297,30 @@ class WebSocketController(private val messagingTemplate: SimpMessagingTemplate) 
             println("Nouvel abonnement - envoi de l'historique: ${messageHistory.size} messages")
             messagingTemplate.convertAndSend(CHANNEL_NAME, messageHistory)
         }
+    }
+}
+
+@RestController
+class SecretRestController {
+
+    //http://localhost:8080/testPublic
+    @GetMapping("/testPublic")
+    fun testPublic(): String {
+        println("/testPublic")
+        return "Hello public"
+    }
+
+    //http://localhost:8080/testPrivate
+    @GetMapping("/testPrivate")
+    fun testPrivate(): String {
+        println("/testPrivate")
+        return "Hello private"
+    }
+
+    //http://localhost:8080/testPrivateAdmin
+    @GetMapping("/testPrivateAdmin")
+    fun testPrivateAdmin(): String {
+        println("/testPrivateAdmin")
+        return "Hello private admin"
     }
 }

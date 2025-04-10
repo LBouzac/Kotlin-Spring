@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link href="/css/main.css" rel="stylesheet"/>
+    <link href="/static/main.css" rel="stylesheet"/>
 </head>
 <body>
 
@@ -11,7 +11,7 @@
 
 
 
-<form method="post" action="/loginSubmit" th:object="${userBean}" >
+<form method="post" action="/testPrivate" th:object="${userBean}" >
 
 
     <p>Login : <input th:field="*{login}" type="text"/></p>

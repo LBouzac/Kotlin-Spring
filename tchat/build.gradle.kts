@@ -37,7 +37,8 @@ dependencies {
 
 //WebSocket
     implementation("org.springframework.boot:spring-boot-starter-websocket")
-
+//Sécurité
+    implementation("org.springframework.boot:spring-boot-starter-security")
 }
 
 kotlin {
